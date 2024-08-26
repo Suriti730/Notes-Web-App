@@ -4,8 +4,18 @@ let notes = document.querySelectorAll(".input-box");
 
 function showNotes() {
     notesContainer.innerHTML = localStorage.getItem("notes");
+    notes = document.querySelectorAll(".input-box");
+    notes.forEach(nt => {
+        nt.addEventListener("keyup", function () {
+            updateStorage();
+        });
+
+        nt.querySelector("img").addEventListener("click", function () {
+            nt.remove();
+            updateStorage();
+        });
+    });
 }
-showNotes();
 
 function updateStorage() {
     localStorage.setItem("notes", notesContainer.innerHTML);
@@ -17,7 +27,21 @@ createBtn.addEventListener("click", () => {
     inputBox.className = "input-box";
     inputBox.setAttribute("contenteditable", "true");
     img.src = "assets/delete.png";
-    notesContainer.appendChild(inputBox).appendChild(img);
+    notesContainer.appendChild(inputBox).appendChild(img);  
+    const range = document.createRange();
+    const selection = window.getSelection();
+    range.setStart(inputBox, 0);
+    range.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(range);
+
+    inputBox.addEventListener("keyup", updateStorage);
+    img.addEventListener("click", function () {
+        inputBox.remove();
+        updateStorage();
+    });
+
+    updateStorage();
 })
 
 notesContainer.addEventListener("click", function (e) {
@@ -41,3 +65,5 @@ document.addEventListener("keydown", event => {
         event.preventDefault();
     }
 })
+
+showNotes();
