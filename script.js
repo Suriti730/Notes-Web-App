@@ -27,7 +27,10 @@ createBtn.addEventListener("click", () => {
     inputBox.className = "input-box";
     inputBox.setAttribute("contenteditable", "true");
     img.src = "assets/delete.png";
-    notesContainer.appendChild(inputBox).appendChild(img);  
+    notesContainer.appendChild(inputBox).appendChild(img); 
+
+    inputBox.focus();
+
     const range = document.createRange();
     const selection = window.getSelection();
     range.setStart(inputBox, 0);
@@ -39,6 +42,12 @@ createBtn.addEventListener("click", () => {
     img.addEventListener("click", function () {
         inputBox.remove();
         updateStorage();
+        const range = document.createRange();
+        range.selectNodeContents(inputBox);
+        range.collapse(false);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
     });
 
     updateStorage();
