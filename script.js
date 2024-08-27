@@ -11,7 +11,7 @@ function showNotes() {
         });
 
         nt.querySelector("img").addEventListener("click", function () {
-            nt.remove();
+            handleDelete(nt);
             updateStorage();
         });
     });
@@ -27,35 +27,39 @@ createBtn.addEventListener("click", () => {
     inputBox.className = "input-box";
     inputBox.setAttribute("contenteditable", "true");
     img.src = "assets/delete.png";
-    notesContainer.appendChild(inputBox).appendChild(img); 
+    img.style.float = "right";
+    notesContainer.appendChild(inputBox).appendChild(img);
 
     inputBox.focus();
 
-    const range = document.createRange();
-    const selection = window.getSelection();
-    range.setStart(inputBox, 0);
-    range.collapse(true);
-    selection.removeAllRanges();
-    selection.addRange(range);
-
-    inputBox.addEventListener("keyup", updateStorage);
-    img.addEventListener("click", function () {
-        inputBox.remove();
+    inputBox.addEventListener("keyup", () => {
         updateStorage();
-        const range = document.createRange();
-        range.selectNodeContents(inputBox);
-        range.collapse(false);
-        const selection = window.getSelection();
-        selection.removeAllRanges();
-        selection.addRange(range);
     });
 
+    img.addEventListener("click", function () {
+        handleDelete(inputBox);
+        updateStorage();
+    });
     updateStorage();
 })
 
+function handleDelete(note) {
+    const prevNote = note.previousElementSibling;
+    const nextNote = note.nextElementSibling;
+
+    note.remove();
+
+    if (prevNote && prevNote.classList.contains("input-box")) {
+        prevNote.focus();
+    } else if (nextNote && nextNote.classList.contains("input-box")) {
+        nextNote.focus();
+    }
+}
+
 notesContainer.addEventListener("click", function (e) {
     if (e.target.tagName === "IMG") {
-        e.target.parentElement.remove();
+        const noteToRemove = e.target.parentElement;
+        handleDelete(noteToRemove);
         updateStorage();
     }
     else if (e.target.tagName === "P") {
